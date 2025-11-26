@@ -13,11 +13,12 @@ const syncUserCreation = inngest.createFunction(
     const {data} = event
 
     // debug line chk
-    const email = data?.email_addresses[0]?.email_address ||
-                  data?.primary_email_address_id ||
+    const email = data?.email_addresses?.[0]?.email_address || 
+                  data?.primary_email_address_id || 
                   data?.email_address ||
                   data?.primary_email_address ||
                   '';
+                  
     console.log("Email found: ", email); 
     console.log("Raw email_addresses: ", data?.email_addresses); 
 
@@ -25,7 +26,7 @@ const syncUserCreation = inngest.createFunction(
       console.log("No email found for user creation"); 
       throw new Error("email req but not found in webhook data"); 
     }
-    
+
     await prisma.user.create({  
       data: {
         id: data.id, 
@@ -57,6 +58,11 @@ const updateUserUpdation = inngest.createFunction(
   {event: 'clerk/user.updated'}, 
   async ({ event }) => {
     const {data} = event
+    const email = data?.email_addresses?.[0]?.email_address || 
+                  data?.primary_email_address_id || 
+                  data?.email_address ||
+                  data?.primary_email_address ||
+                  '';
     await prisma.user.update({  
       where: {
         id: data.id, 
