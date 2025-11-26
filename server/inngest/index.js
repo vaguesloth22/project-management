@@ -11,6 +11,15 @@ const syncUserCreation = inngest.createFunction(
   {event: 'clerk/user.created'}, 
   async ({ event }) => {
     const {data} = event
+
+    // debug line chk
+    console.log("Clerk webhook data: ", JSON.stringify(data, null, 2)); 
+    const email = data?.email_addresses[0]?.email_address || data?.primary_email_address_id || '';
+
+    if (!email) {
+      console.error('No eamil found for user'); 
+      return;
+    }
     await prisma.user.create({  
       data: {
         id: data.id, 
